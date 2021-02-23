@@ -1,0 +1,45 @@
+
+-----------------------------------------------------------------------
+-                     NDS Tools for Homebrew                          -
+-                 Written by Ville Helin in 2006+                     -
+-----------------------------------------------------------------------
+
+
+1. DESCRIPTION
+
+Random Nintendo DS development tools. Use these for your Nintendo DS
+homebrew projects!
+
+
+2. CONTACT
+
+If you have any questions, feel free to contact me at
+ville.helin#iki.fi. I might not remember much as it's 2021 today,
+and this stuff is from over 10 years ago from my backup... :)
+
+
+3. VERSION HISTORY
+
+v1.0 (23-Jan-2021)
+  * First public release. I wrote these tools back in 2006+, used
+    mainly in my homebrew tests, and that was it. Now, in 2021, I
+    feel like I should release them as open source as they are
+    just gathering dust on my backup drive...
+
+
+4. NOTE
+
+ttuPlayer is perhaps the most valuable piece of code here. It's a .mod
+player, but first you need to use modToTTU to turn .mod files into
+.ttu (patterns) and .tts (samples) files.
+
+The player itself (ttuStart() and ttuTick()) needs to run on the ARM7
+side of Nintendo DS. See the code in arm7 folder for more information.
+	
+	
+5. LEGAL STUFF
+ 
+You use this on your own risk. I don't take responsibility for anything.
+The license for the source code here is LGPL v2.1 - see LICENSE file
+for more information. But if you use any of this code in your projects,
+commercial or non-commercial, a mention in the credits would be nice.
