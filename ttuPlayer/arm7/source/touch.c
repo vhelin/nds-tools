@@ -19,15 +19,15 @@ static s32 touchYOffset;
 
 void touchInit(void) {
 
-	// these values are not in the firmware?
+  // these values are not in the firmware?
   touchXScale = ((PERSONAL_DATA_TOUCH_CALIBRATION_X2PX - PERSONAL_DATA_TOUCH_CALIBRATION_X1PX) << 19) /
     (PERSONAL_DATA_TOUCH_CALIBRATION_X2 - PERSONAL_DATA_TOUCH_CALIBRATION_X1);
   touchYScale = ((PERSONAL_DATA_TOUCH_CALIBRATION_Y2PX - PERSONAL_DATA_TOUCH_CALIBRATION_Y1PX) << 19) /
     (PERSONAL_DATA_TOUCH_CALIBRATION_Y2 - PERSONAL_DATA_TOUCH_CALIBRATION_Y1);
   touchXOffset = ((PERSONAL_DATA_TOUCH_CALIBRATION_X1 + PERSONAL_DATA_TOUCH_CALIBRATION_X2) * touchXScale -
-		  ((PERSONAL_DATA_TOUCH_CALIBRATION_X1PX + PERSONAL_DATA_TOUCH_CALIBRATION_X2PX) << 19)) >> 1;
+                  ((PERSONAL_DATA_TOUCH_CALIBRATION_X1PX + PERSONAL_DATA_TOUCH_CALIBRATION_X2PX) << 19)) >> 1;
   touchYOffset = ((PERSONAL_DATA_TOUCH_CALIBRATION_Y1 + PERSONAL_DATA_TOUCH_CALIBRATION_Y2) * touchYScale -
-		  ((PERSONAL_DATA_TOUCH_CALIBRATION_Y1PX + PERSONAL_DATA_TOUCH_CALIBRATION_Y2PX) << 19)) >> 1;
+                  ((PERSONAL_DATA_TOUCH_CALIBRATION_Y1PX + PERSONAL_DATA_TOUCH_CALIBRATION_Y2PX) << 19)) >> 1;
 }
 
 
@@ -73,7 +73,7 @@ s32 touchReadRetry(s32 measure, s32 retry, s32 range) {
   s32 i, currentValue, currentRange;
   s32 previousValue;
 
-	previousValue = touchReadValue(measure | 1);
+  previousValue = touchReadValue(measure | 1);
 
   /* re-read the data until we get a stabile answer */
   for (i = 0; i < retry; i++) {

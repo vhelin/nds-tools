@@ -32,110 +32,110 @@ s32 scanlineStart __attribute__((section(".bss")));
 
 void irqHandler(void) {
 
-	// remember the scanline where this irq started
-	scanlineStart = REG_VCOUNT;
+  // remember the scanline where this irq started
+  scanlineStart = REG_VCOUNT;
 
   if (REG_IF & BIT_IE_WIFI) {
-		// WIFI
-		Wifi_Interrupt();
+    // WIFI
+    Wifi_Interrupt();
 
     // end
     IRQ_CHECK |= BIT_IE_WIFI;
     REG_IF |= BIT_IE_WIFI;
-	}
+  }
 
   if (REG_IF & BIT_IE_IPC_FIFO_NOT_EMPTY) {
-		// handle IPC FIFO not empty
-		if (REG_IPCFIFORECV == 0x87654321)
-			Wifi_Sync();
+    // handle IPC FIFO not empty
+    if (REG_IPCFIFORECV == 0x87654321)
+      Wifi_Sync();
 
     // end
     IRQ_CHECK |= BIT_IE_IPC_FIFO_NOT_EMPTY;
     REG_IF |= BIT_IE_IPC_FIFO_NOT_EMPTY;
-	}
+  }
 
   if (REG_IF & BIT_IE_T0) {
-		// one tick for the TTU player
-		ttuTick();
+    // one tick for the TTU player
+    ttuTick();
 
     // end
     IRQ_CHECK |= BIT_IE_T0;
     REG_IF |= BIT_IE_T0;
-	}
+  }
 
   if (REG_IF & BIT_IE_VBI) {
-		// handle vblank
+    // handle vblank
 
-		// startup delay
-		if (startupVBICounter < 10)
-			startupVBICounter++;
-		else {
-			if (sharedMemory != NULL) {
-				// read the touch screen data
-				touchReadPosition(&touch);
+    // startup delay
+    if (startupVBICounter < 10)
+      startupVBICounter++;
+    else {
+      if (sharedMemory != NULL) {
+        // read the touch screen data
+        touchReadPosition(&touch);
 
-				// make the data available for the ARM9
-				if (touch.pixelX <= 0 || touch.pixelX >= SCREEN_WIDTH - 1 || touch.pixelY <= 0 || touch.pixelY >= SCREEN_HEIGHT - 1)
-					sharedMemory[SHARED_TOUCH_PRESSED] = NO;
-				else
-					sharedMemory[SHARED_TOUCH_PRESSED] = YES;
+        // make the data available for the ARM9
+        if (touch.pixelX <= 0 || touch.pixelX >= SCREEN_WIDTH - 1 || touch.pixelY <= 0 || touch.pixelY >= SCREEN_HEIGHT - 1)
+          sharedMemory[SHARED_TOUCH_PRESSED] = NO;
+        else
+          sharedMemory[SHARED_TOUCH_PRESSED] = YES;
 
-				sharedMemory[SHARED_TOUCH_PX] = touch.pixelX;
-				sharedMemory[SHARED_TOUCH_PY] = touch.pixelY;
+        sharedMemory[SHARED_TOUCH_PX] = touch.pixelX;
+        sharedMemory[SHARED_TOUCH_PY] = touch.pixelY;
 
-				// manage the sound queue
-				soundQueuePoll();
-			}
-		}
+        // manage the sound queue
+        soundQueuePoll();
+      }
+    }
 
-		// read X and Y buttons
-		if (sharedMemory != NULL)
-			sharedMemory[SHARED_KEYS] = REG_KEYXY;
+    // read X and Y buttons
+    if (sharedMemory != NULL)
+      sharedMemory[SHARED_KEYS] = REG_KEYXY;
 
-		// WIFI vbi update
-		Wifi_Update();
+    // WIFI vbi update
+    Wifi_Update();
 
     // end
     IRQ_CHECK |= BIT_IE_VBI;
     REG_IF |= BIT_IE_VBI;
   }
 
-	// mark the used scanlines
-	while (scanlineStart != REG_VCOUNT) {
-		freeScanlines[scanlineStart++] = 1;
-		if (scanlineStart == 263)
-			scanlineStart = 0;
-	}
+  // mark the used scanlines
+  while (scanlineStart != REG_VCOUNT) {
+    freeScanlines[scanlineStart++] = 1;
+    if (scanlineStart == 263)
+      scanlineStart = 0;
+  }
 }
 
 
 // dswifi functions
 void wifiARM7ARM9Sync(void) {
 
-	REG_IPCFIFOSEND = 0x87654321;
+  REG_IPCFIFOSEND = 0x87654321;
 }
 
 
 int main(int argc, char **argv) {
 
-	u32 i, j;
+  u32 i, j;
 
-	sharedMemory = NULL;
+  sharedMemory = NULL;
 
-	// IPC init
-	REG_IPCFIFOCNT = IPCFIFOCNT_SEND_FLUSH | IPCFIFOCNT_ENABLE;
+  // IPC init
+  REG_IPCFIFOCNT = IPCFIFOCNT_SEND_FLUSH | IPCFIFOCNT_ENABLE;
 
   // enable sound
   REG_POWCNT = BIT_POWCNT_SOUND;
 
-	// disable timer 0
-	REG_TM0CNT_H = 0;
+  // disable timer 0
+  REG_TM0CNT_H = 0;
 
-	// audio master
-	REG_SOUNDCNT = BIT_SOUNDCNT_SOUND_ENABLE | SOUNDCNT_SOUND_VOLUME(127);
+  // audio master
+  REG_SOUNDCNT = BIT_SOUNDCNT_SOUND_ENABLE | SOUNDCNT_SOUND_VOLUME(127);
 
-	// init startup delay
-	startupVBICounter = 0;
+  // init startup delay
+  startupVBICounter = 0;
 
   // set up the interrupt handler
   REG_IME = 0; // disable all interrupts
@@ -145,82 +145,82 @@ int main(int argc, char **argv) {
   REG_DISPSTAT = BIT_DISPSTAT_VBI;
   REG_IME = 1; // enable the interrupts set in REG_IE
 
-	/////////////////////////////////////////////////////////////////////////////
-	// FIRMWARE
-	/////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // FIRMWARE
+  /////////////////////////////////////////////////////////////////////////////
 
-	// DOESN'T SEEM TO WORK???
+  // DOESN'T SEEM TO WORK???
 
-	// read the user name
-	//firmwareRead(0x3FA1A,  1, (u8 *)USER_NAME_CHARACTERS);
-	//firmwareRead(0x3FA06, 20, (u8 *)USER_NAME);
+  // read the user name
+  //firmwareRead(0x3FA1A,  1, (u8 *)USER_NAME_CHARACTERS);
+  //firmwareRead(0x3FA06, 20, (u8 *)USER_NAME);
 
   // init the touch screen reader
   touchInit();
 
-	/////////////////////////////////////////////////////////////////////////////
-	// WIFI
-	/////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // WIFI
+  /////////////////////////////////////////////////////////////////////////////
 
-	// sync with ARM9 and init WIFI
-	while (1) {
-		// wait for something to arrive
-		while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
-			swiWaitForVBlank();
+  // sync with ARM9 and init WIFI
+  while (1) {
+    // wait for something to arrive
+    while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
+      swiWaitForVBlank();
 
-		// is it the WIFI sync number?
-		i = REG_IPCFIFORECV;
-		if (i == 0x12345678)
-			break;
-	}
+    // is it the WIFI sync number?
+    i = REG_IPCFIFORECV;
+    if (i == 0x12345678)
+      break;
+  }
 
-	// wait for the WIFI init code to arrive
-	while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
-		swiWaitForVBlank();
+  // wait for the WIFI init code to arrive
+  while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
+    swiWaitForVBlank();
 
-	i = REG_IPCFIFORECV;
+  i = REG_IPCFIFORECV;
 
-	// get also the address of the shared memory block
-	while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
-		swiWaitForVBlank();
+  // get also the address of the shared memory block
+  while (REG_IPCFIFOCNT & IPCFIFOCNT_RECV_STATUS_EMPTY)
+    swiWaitForVBlank();
 
-	sharedMemory = (vu16 *)(REG_IPCFIFORECV);
+  sharedMemory = (vu16 *)(REG_IPCFIFORECV);
 
-	// continue to init the WIFI
-	Wifi_Init(i);
+  // continue to init the WIFI
+  Wifi_Init(i);
 
-	// init the IPC FIFO
-	REG_IPCFIFOCNT = IPCFIFOCNT_ENABLE | IPCFIFOCNT_RECV_IRQ_ON_NOT_EMPTY;
+  // init the IPC FIFO
+  REG_IPCFIFOCNT = IPCFIFOCNT_ENABLE | IPCFIFOCNT_RECV_IRQ_ON_NOT_EMPTY;
 
-	// allow WIFI lib to notify ARM9
-	Wifi_SetSyncHandler(wifiARM7ARM9Sync);
+  // allow WIFI lib to notify ARM9
+  Wifi_SetSyncHandler(wifiARM7ARM9Sync);
 
-	/////////////////////////////////////////////////////////////////////////////
-	// THE REST
-	/////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // THE REST
+  /////////////////////////////////////////////////////////////////////////////
 
-	// init the sound queue
-	soundQueueInit();
+  // init the sound queue
+  soundQueueInit();
 
-	/////////////////////////////////////////////////////////////////////////////
-	// MAIN LOOP
-	/////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // MAIN LOOP
+  /////////////////////////////////////////////////////////////////////////////
 
-	// ARM7 does all its jobs in the interrupts
+  // ARM7 does all its jobs in the interrupts
   while (1) {
     swiWaitForVBlank();
 
-		// one frame has passed, count the scanlines where we had CPU activity (and clear the buffer)
-		j = 0;
-		for (i = 0; i < 263; i++) {
-			if (freeScanlines[i] == 1) {
-				freeScanlines[i] = 0;
-				j++;
-			}
-		}
+    // one frame has passed, count the scanlines where we had CPU activity (and clear the buffer)
+    j = 0;
+    for (i = 0; i < 263; i++) {
+      if (freeScanlines[i] == 1) {
+        freeScanlines[i] = 0;
+        j++;
+      }
+    }
 
-		// pass it to ARM9
-		sharedMemory[SHARED_ARM7_FREE] = 263 - j;
+    // pass it to ARM9
+    sharedMemory[SHARED_ARM7_FREE] = 263 - j;
   }
 
   return 0;

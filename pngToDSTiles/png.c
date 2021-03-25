@@ -67,14 +67,14 @@ int png_load(char *name, int *dx, int *dy, int *type, unsigned char **o) {
   if ((colortype == PNG_COLOR_TYPE_PALETTE && depth <= 8) ||
       (colortype == PNG_COLOR_TYPE_GRAY && depth < 8) ||
       (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))) {
-		int alpha = png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS);
+    int alpha = png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS);
 
     png_set_expand(png_ptr);
 
-		if (alpha)
-			colortype = PNG_COLOR_TYPE_RGBA;
-		else
-			colortype = PNG_COLOR_TYPE_RGB;
+    if (alpha)
+      colortype = PNG_COLOR_TYPE_RGBA;
+    else
+      colortype = PNG_COLOR_TYPE_RGB;
   }
 
   if (colortype == PNG_COLOR_TYPE_GRAY) {

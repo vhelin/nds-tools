@@ -37,7 +37,7 @@ static int _palette_collect_smash(unsigned char *data, int dX, int dY, int entri
     /* do we have the color already? */
     for (j = 0; j < paletteEntries; j++) {
       if (palette[j] == color)
-				break;
+        break;
     }
 
     /* store the palette index */
@@ -77,8 +77,8 @@ static void _image_squash(unsigned char *data, int dX, int dY, int type) {
 
     color = (cB << 10) | (cG << 5) | cR;
 
-		if (colors == 4 && data[i*colors + 3] == 0)
-			color = 0xFFFF;
+    if (colors == 4 && data[i*colors + 3] == 0)
+      color = 0xFFFF;
 
     /* write back the color */
     data[i*2 + 0] = color >> 8;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
   FILE *f;
 
   if (argc != 5 || (strcmp(argv[1], "-1") != 0 && strcmp(argv[1], "-2") != 0) ||
-			(strcmp(argv[2], "-8x8") != 0 && strcmp(argv[2], "-16x16") != 0)) {
+      (strcmp(argv[2], "-8x8") != 0 && strcmp(argv[2], "-16x16") != 0)) {
     fprintf(stderr, "USAGE: %s -{12} -{8x8/16x16} <PNG FILE> <OUT BASE NAME>\n", argv[0]);
     fprintf(stderr, "COMMANDS:\n");
     fprintf(stderr, " 1  Output 16 color 8x8 tiles\n");
@@ -103,23 +103,23 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-	/* determine colors */
+  /* determine colors */
   if (strcmp(argv[1], "-1") == 0)
     colors = 16;
   else
     colors = 256;
 
-	/* determine tile size */
-	if (strcmp(argv[2], "-8x8") == 0) {
-		tileX = 8;
-		tileY = 8;
-	}
-	else if (strcmp(argv[2], "-16x16") == 0) {
-		tileX = 16;
-		tileY = 16;
-	}
+  /* determine tile size */
+  if (strcmp(argv[2], "-8x8") == 0) {
+    tileX = 8;
+    tileY = 8;
+  }
+  else if (strcmp(argv[2], "-16x16") == 0) {
+    tileX = 16;
+    tileY = 16;
+  }
 
-	/* import the image */
+  /* import the image */
   if (png_load(argv[3], &dX, &dY, &type, &d) == FAILED)
     return -1;
 
@@ -128,8 +128,8 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-	/* set color 0 (transparent) */
-	palette[paletteEntries++] = 0xFFFF;
+  /* set color 0 (transparent) */
+  palette[paletteEntries++] = 0xFFFF;
 
   /* squash the image -> 16bit */
   _image_squash(d, dX, dY, type);
@@ -146,48 +146,48 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-	if (colors == 16) {
+  if (colors == 16) {
     /* tile loop */
     for (tY = 0; tY < dY / tileY; tY++) {
       for (tX = 0; tX < dX / tileX; tX++) {
-				/* 8x8 loop */
-				for (bY = 0; bY < tileY/8; bY++) {
-					for (bX = 0; bX < tileX/8; bX++) {
-						/* pixel loop */
-						for (y = 0; y < 8; y++) {
-							for (x = 0; x < 8; x += 2) {
-								/* merge the two 4bit indices */
-								i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x + 0);
-								k = d[i] << 4;
-								i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x + 1);
-								k |= d[i];
-								_write_u8(f, k);
-							}
-						}
-					}
-				}
-			}
-		}
+        /* 8x8 loop */
+        for (bY = 0; bY < tileY/8; bY++) {
+          for (bX = 0; bX < tileX/8; bX++) {
+            /* pixel loop */
+            for (y = 0; y < 8; y++) {
+              for (x = 0; x < 8; x += 2) {
+                /* merge the two 4bit indices */
+                i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x + 0);
+                k = d[i] << 4;
+                i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x + 1);
+                k |= d[i];
+                _write_u8(f, k);
+              }
+            }
+          }
+        }
+      }
+    }
   }
-	else if (colors == 256) {
+  else if (colors == 256) {
     /* tile loop */
     for (tY = 0; tY < dY / tileY; tY++) {
       for (tX = 0; tX < dX / tileX; tX++) {
-				/* 8x8 loop */
-				for (bY = 0; bY < tileY/8; bY++) {
-					for (bX = 0; bX < tileX/8; bX++) {
-						/* pixel loop */
-						for (y = 0; y < 8; y++) {
-							for (x = 0; x < 8; x++) {
-								i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x);
-								_write_u8(f, d[i]);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+        /* 8x8 loop */
+        for (bY = 0; bY < tileY/8; bY++) {
+          for (bX = 0; bX < tileX/8; bX++) {
+            /* pixel loop */
+            for (y = 0; y < 8; y++) {
+              for (x = 0; x < 8; x++) {
+                i = (tY*tileY + bY*8 + y)*dX + (tX*tileX + bX*8 + x);
+                _write_u8(f, d[i]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   fclose(f);
   free(d);
@@ -200,12 +200,12 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-	fprintf(stderr, "COL  A R  G  B\n");
+  fprintf(stderr, "COL  A R  G  B\n");
 
   for (i = 0; i < paletteEntries; i++) {
-		fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
+    fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
     _write_u16(f, palette[i]);
-	}
+  }
 
   fclose(f);
 

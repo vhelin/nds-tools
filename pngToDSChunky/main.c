@@ -31,7 +31,7 @@ static int _palette_collect_smash(unsigned char *data, int dX, int dY, int entri
     /* do we have the color already? */
     for (j = 0; j < paletteEntries; j++) {
       if (palette[j] == color)
-				break;
+        break;
     }
 
     /* store the palette index */
@@ -71,8 +71,8 @@ static void _image_squash(unsigned char *data, int dX, int dY, int type) {
 
     color = (cB << 10) | (cG << 5) | cR;
 
-		if (colors == 4 && data[i*colors + 3] == 0)
-			color = 0xFFFF;
+    if (colors == 4 && data[i*colors + 3] == 0)
+      color = 0xFFFF;
 
     /* write back the color */
     data[i*2 + 0] = color >> 8;
@@ -103,18 +103,18 @@ int main(int argc, char *argv[]) {
   /* squash the image -> 16bit */
   _image_squash(d, dX, dY, type);
 
-	/* set color 0 (transparent) */
-	palette[paletteEntries++] = 0xFFFF;
+  /* set color 0 (transparent) */
+  palette[paletteEntries++] = 0xFFFF;
 
-	/* collect colors */
+  /* collect colors */
   if (strcmp(argv[1], "-1") == 0) {
-		if (_palette_collect_smash(d, dX, dY, 16) == FAILED)
-			return -1;
-	}
+    if (_palette_collect_smash(d, dX, dY, 16) == FAILED)
+      return -1;
+  }
   else if (strcmp(argv[1], "-2") == 0) {
-		if (_palette_collect_smash(d, dX, dY, 256) == FAILED)
-			return -1;
-	}
+    if (_palette_collect_smash(d, dX, dY, 256) == FAILED)
+      return -1;
+  }
 
   /* write the image data */
   sprintf(name, "%s.bin", argv[3]);
@@ -124,27 +124,27 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-	/* write DX and DY */
-	/*
-	_write_u16(f, dX);
-	_write_u16(f, dY);
+  /* write DX and DY */
+  /*
+    _write_u16(f, dX);
+    _write_u16(f, dY);
   */
 
   if (strcmp(argv[1], "-1") == 0) {
-		/* 16 color image */
+    /* 16 color image */
     for (i = 0; i < dX*dY; i += 4) {
       fprintf(f, "%c", (d[i+1] << 4) | d[i+0]);
       fprintf(f, "%c", (d[i+3] << 4) | d[i+2]);
     }
   }
   else if (strcmp(argv[1], "-2") == 0) {
-		/* 256 color image */
+    /* 256 color image */
     for (i = 0; i < dX*dY; i++) {
       fprintf(f, "%c", d[i]);
     }
   }
   else if (strcmp(argv[1], "-3") == 0) {
-		/* 16bit image */
+    /* 16bit image */
     for (i = 0; i < dX*dY*2; i += 2) {
       _write_u16(f, (d[i+0] << 8) | d[i+1]);
     }
@@ -154,23 +154,23 @@ int main(int argc, char *argv[]) {
   free(d);
 
   /* write the palette data */
-	if (strcmp(argv[1], "-1") == 0 || strcmp(argv[1], "-2") == 0) {
-		sprintf(name, "%s.pal", argv[3]);
-		f = fopen(name, "wb");
-		if (f == NULL) {
-			fprintf(stderr, "MAIN: Could not open file \"%s\" for writing.\n", name);
-			return -1;
-		}
+  if (strcmp(argv[1], "-1") == 0 || strcmp(argv[1], "-2") == 0) {
+    sprintf(name, "%s.pal", argv[3]);
+    f = fopen(name, "wb");
+    if (f == NULL) {
+      fprintf(stderr, "MAIN: Could not open file \"%s\" for writing.\n", name);
+      return -1;
+    }
 
-		fprintf(stderr, "COL  A R  G  B\n");
+    fprintf(stderr, "COL  A R  G  B\n");
 
-		for (i = 0; i < paletteEntries; i++) {
-		fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
-			_write_u16(f, palette[i]);
-		}
+    for (i = 0; i < paletteEntries; i++) {
+      fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
+      _write_u16(f, palette[i]);
+    }
 
-		fclose(f);
-	}
+    fclose(f);
+  }
 
   return 0;
 }

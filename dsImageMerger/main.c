@@ -63,7 +63,7 @@ static int _import_image(char *baseName, int colors, unsigned char **dataOut, in
     color = pal[i*2 + 0] | (pal[i*2 + 1] << 8);
     for (j = 0; j < paletteEntries; j++) {
       if (color == palette[j])
-				break;
+        break;
     }
 
     if (j == paletteEntries) {
@@ -77,91 +77,91 @@ static int _import_image(char *baseName, int colors, unsigned char **dataOut, in
     }
   }
 
-	if (importData == YES) {
-		sprintf(name, "%s.bin", baseName);
-		f = fopen(name, "rb");
-		if (f == NULL) {
-			fprintf(stderr, "_IMPORT_IMAGE: Could not open file \"%s\" for reading.\n", name);
-			return FAILED;
-		}
+  if (importData == YES) {
+    sprintf(name, "%s.bin", baseName);
+    f = fopen(name, "rb");
+    if (f == NULL) {
+      fprintf(stderr, "_IMPORT_IMAGE: Could not open file \"%s\" for reading.\n", name);
+      return FAILED;
+    }
 
-		/* get the file size */
-		fseek(f, 0, SEEK_END);
-		fileSizePixels = ftell(f);
-		fseek(f, 0, SEEK_SET);
+    /* get the file size */
+    fseek(f, 0, SEEK_END);
+    fileSizePixels = ftell(f);
+    fseek(f, 0, SEEK_SET);
 
-		data = malloc(fileSizePixels);
-		if (data == NULL) {
-			fprintf(stderr, "_IMPORT_IMAGE: Out of memory error.\n");
-			fclose(f);
-			return FAILED;
-		}
+    data = malloc(fileSizePixels);
+    if (data == NULL) {
+      fprintf(stderr, "_IMPORT_IMAGE: Out of memory error.\n");
+      fclose(f);
+      return FAILED;
+    }
 
-		fread(data, 1, fileSizePixels, f);
-		fclose(f);
+    fread(data, 1, fileSizePixels, f);
+    fclose(f);
 
-		/* reindex the data */
-		if (colors == 256) {
-			for (i = 0; i < fileSizePixels; i++) {
-				/* read the old color */
-				color = data[i];
-				color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
+    /* reindex the data */
+    if (colors == 256) {
+      for (i = 0; i < fileSizePixels; i++) {
+        /* read the old color */
+        color = data[i];
+        color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
 
-				/* find the new color */
-				for (j = 0; j < paletteEntries; j++) {
-					if (color == palette[j])
-						break;
-				}
+        /* find the new color */
+        for (j = 0; j < paletteEntries; j++) {
+          if (color == palette[j])
+            break;
+        }
 
-				if (j == paletteEntries)
-					fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", data[i]);
+        if (j == paletteEntries)
+          fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", data[i]);
 
-				/* replace */
-				data[i] = j;
-			}
-		}
-		else {
-			for (i = 0; i < fileSizePixels; i++) {
-				/* read the old color */
-				color = (data[i] >> 4) & 0xF;
-				color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
+        /* replace */
+        data[i] = j;
+      }
+    }
+    else {
+      for (i = 0; i < fileSizePixels; i++) {
+        /* read the old color */
+        color = (data[i] >> 4) & 0xF;
+        color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
 
-				/* find the new color */
-				for (j = 0; j < paletteEntries; j++) {
-					if (color == palette[j])
-						break;
-				}
+        /* find the new color */
+        for (j = 0; j < paletteEntries; j++) {
+          if (color == palette[j])
+            break;
+        }
 
-				if (j == paletteEntries)
-					fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", (data[i] >> 4) & 0xF);
+        if (j == paletteEntries)
+          fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", (data[i] >> 4) & 0xF);
 
-				color = data[i] & 0xF;
+        color = data[i] & 0xF;
 
-				/* replace */
-				data[i] = j << 4;
+        /* replace */
+        data[i] = j << 4;
 
-				/* read the old color */
-				color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
+        /* read the old color */
+        color = pal[color*2 + 0] | (pal[color*2 + 1] << 8);
 
-				/* find the new color */
-				for (j = 0; j < paletteEntries; j++) {
-					if (color == palette[j])
-						break;
-				}
+        /* find the new color */
+        for (j = 0; j < paletteEntries; j++) {
+          if (color == palette[j])
+            break;
+        }
 
-				if (j == paletteEntries)
-					fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", data[i] & 0xF);
+        if (j == paletteEntries)
+          fprintf(stderr, "_IMPORT_IMAGE: Where did we lose color %d?\n", data[i] & 0xF);
 
-				/* replace */
-				data[i] = data[i] | j;
-			}
-		}
-	}
+        /* replace */
+        data[i] = data[i] | j;
+      }
+    }
+  }
 
   free(pal);
 
   *dataOut = data;
-	*sizeOut = fileSizePixels;
+  *sizeOut = fileSizePixels;
 
   return SUCCEEDED;
 }
@@ -180,8 +180,8 @@ static int _write_image(char *baseName, unsigned char *tileData, int size, int c
     return FAILED;
   }
 
-	for (i = 0; i < size; i++)
-		_write_u8(f, tileData[i]);
+  for (i = 0; i < size; i++)
+    _write_u8(f, tileData[i]);
 
   fclose(f);
 
@@ -229,12 +229,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-	fprintf(stderr, "COL  A R  G  B\n");
+  fprintf(stderr, "COL  A R  G  B\n");
 
   for (i = 0; i < paletteEntries; i++) {
-		fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
+    fprintf(stderr, "%.3d: %.1d %.2d %.2d %.2d\n", i, palette[i] >> 15, (palette[i] >> 0) & 31, (palette[i] >> 5) & 31, (palette[i] >> 10) & 31);
     _write_u16(f, palette[i]);
-	}
+  }
 
   fclose(f);
 

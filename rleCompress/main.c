@@ -16,10 +16,10 @@ static void _write_u32(FILE *f, int data) {
 
 
 /*
-static void _write_u16(FILE *f, int data) {
+  static void _write_u16(FILE *f, int data) {
 
   fprintf(f, "%c%c", data & 0xFF, (data >> 8) & 0xFF);
-}
+  }
 */
 
 
@@ -31,8 +31,8 @@ static void _write_u8(FILE *f, int data) {
 
 int main(int argc, char *argv[]) {
 
-	unsigned char *data;
-	int fileSize;
+  unsigned char *data;
+  int fileSize;
   FILE *f;
 
   if (argc != 3) {
@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-	/********************************************************************************/
-	/* INPUT */
-	/********************************************************************************/
+  /********************************************************************************/
+  /* INPUT */
+  /********************************************************************************/
 
-	/* read the BIN file */
+  /* read the BIN file */
   f = fopen(argv[1], "rb");
   if (f == NULL) {
     fprintf(stderr, "MAIN: Could not open file \"%s\" for reading.\n", argv[1]);
@@ -66,65 +66,65 @@ int main(int argc, char *argv[]) {
   fread(data, 1, fileSize, f);
   fclose(f);
 
-	/********************************************************************************/
-	/* OUTPUT (RLE) */
-	/********************************************************************************/
+  /********************************************************************************/
+  /* OUTPUT (RLE) */
+  /********************************************************************************/
 
-	{
-		int i, count, b1;
+  {
+    int i, count, b1;
 
-		/* write the RLE file */
-		f = fopen(argv[2], "wb");
-		if (f == NULL) {
-			fprintf(stderr, "MAIN: Could not open file \"%s\" for writing.\n", argv[2]);
-			return 1;
-		}
+    /* write the RLE file */
+    f = fopen(argv[2], "wb");
+    if (f == NULL) {
+      fprintf(stderr, "MAIN: Could not open file \"%s\" for writing.\n", argv[2]);
+      return 1;
+    }
 
-		/* header */
-		_write_u8(f, 'R');
-		_write_u8(f, 'L');
-		_write_u8(f, 'E');
-		_write_u8(f, 'b');
+    /* header */
+    _write_u8(f, 'R');
+    _write_u8(f, 'L');
+    _write_u8(f, 'E');
+    _write_u8(f, 'b');
 
-		/* original size */
-		_write_u32(f, fileSize);
+    /* original size */
+    _write_u32(f, fileSize);
 
-		/* compress */
-		i = 0;
-		while (i < fileSize) {
+    /* compress */
+    i = 0;
+    while (i < fileSize) {
 
 #ifdef U16
-			/* output the data word */
-			_write_u16(f, data[i+0] | (data[i+1] << 8));
-			b1 = data[i++];
-			b2 = data[i++];
-			count = 1;
-			while (count < 0xFFFF && i < fileSize) {
-				if (b1 != data[i+0] || b2 != data[i+1])
-					break;
-				i += 2;
-				count++;
-			}
-			/* output the count */
-			_write_u16(f, count);
+      /* output the data word */
+      _write_u16(f, data[i+0] | (data[i+1] << 8));
+      b1 = data[i++];
+      b2 = data[i++];
+      count = 1;
+      while (count < 0xFFFF && i < fileSize) {
+        if (b1 != data[i+0] || b2 != data[i+1])
+          break;
+        i += 2;
+        count++;
+      }
+      /* output the count */
+      _write_u16(f, count);
 #endif
 
-			/* output the data word */
-			_write_u8(f, data[i]);
-			b1 = data[i++];
-			count = 1;
-			while (count < 0xFF && i < fileSize) {
-				if (b1 != data[i])
-					break;
-				i++;
-				count++;
-			}
-			/* output the count */
-			_write_u8(f, count);
-		}
+      /* output the data word */
+      _write_u8(f, data[i]);
+      b1 = data[i++];
+      count = 1;
+      while (count < 0xFF && i < fileSize) {
+        if (b1 != data[i])
+          break;
+        i++;
+        count++;
+      }
+      /* output the count */
+      _write_u8(f, count);
+    }
 
-		fclose(f);
-	}
+    fclose(f);
+  }
 
   return 0;
 }
